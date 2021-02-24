@@ -1,17 +1,35 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "BullCowCartridge.h"
+#include "HiddenWordList.h"
 
 void UBullCowCartridge::BeginPlay() // When the game starts
 {
     Super::BeginPlay();
+    
     SetupGame();
 
     PrintLine(TEXT("The hidden word is: %s."), *HiddenWord);
+    PrintLine(TEXT("The number of valid words is :%i"), GetValidWords(Words).Num());
+    PrintLine(TEXT("The number of possible words is :%i."), Words.Num());
 
-    PrintLine(TEXT("Welcoime to Bull Cows!"));
-    PrintLine(TEXT("Guess the %i letter word!"), HiddenWord.Len());
-    PrintLine(TEXT("Please insert something and press Enter:"));
-
+    TArray<FString> ValidWords;
+/*
+Work on TArray
+*/
+    for (int32 Index = 0; Index < 10; Index++)
+    {
+        if (Words[Index].Len() >= 4 && Words[Index].Len() <= 8)
+        {
+            // PrintLine(TEXT("%s"), *Words[Index]);
+            ValidWords.Emplace(Words[Index]);
+        }
+    }
+    for (int32 Index = 0; Index < ValidWords.Num(); Index++)
+    {
+        PrintLine(TEXT("%s"), *ValidWords[Index]);
+    }
+    
+    
 }
 
 void UBullCowCartridge::OnInput(const FString& Input) // When the player hits enter
@@ -100,4 +118,18 @@ bool UBullCowCartridge::IsIsogram(FString String) const
         }   
     }
     return true;
+}
+
+TArray<FString> UBullCowCartridge::GetValidWords(TArray<FString> WordList) const
+{
+    TArray<FString> ValidWords;
+   // range-based foor loop
+    for (FString Word : WordList)
+    {
+        if (Word.Len() >= 4 && Word.Len() <= 8 && IsIsogram(Word))
+        {
+            ValidWords.Emplace(Word);
+        }
+    }
+    return ValidWords;
 }
