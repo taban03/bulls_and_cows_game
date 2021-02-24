@@ -6,33 +6,24 @@ void UBullCowCartridge::BeginPlay() // When the game starts
 {
     Super::BeginPlay();
     
+    int32 a = 0;
+    int32 b = 5;
+
+    const int32& refa = a;
+    PrintLine(TEXT("a = %i, b = %i, refa = %i"), a, b, refa);
+
+    // refa = b;
+
     SetupGame();
 
     PrintLine(TEXT("The hidden word is: %s."), *HiddenWord);
     PrintLine(TEXT("The number of valid words is :%i"), GetValidWords(Words).Num());
     PrintLine(TEXT("The number of possible words is :%i."), Words.Num());
 
-    TArray<FString> ValidWords;
-/*
-Work on TArray
-*/
-    for (int32 Index = 0; Index < 10; Index++)
-    {
-        if (Words[Index].Len() >= 4 && Words[Index].Len() <= 8)
-        {
-            // PrintLine(TEXT("%s"), *Words[Index]);
-            ValidWords.Emplace(Words[Index]);
-        }
-    }
-    for (int32 Index = 0; Index < ValidWords.Num(); Index++)
-    {
-        PrintLine(TEXT("%s"), *ValidWords[Index]);
-    }
-    
     
 }
 
-void UBullCowCartridge::OnInput(const FString& Input) // When the player hits enter
+void UBullCowCartridge::OnInput(const FString& PlayerInput) // When the player hits enter
 {
     if (bGameOver) 
     {
@@ -41,8 +32,7 @@ void UBullCowCartridge::OnInput(const FString& Input) // When the player hits en
         
     } else 
     {
-        ProcessGuess(Input);
-       
+        ProcessGuess(PlayerInput);
     }   
 }
 
@@ -68,7 +58,7 @@ void UBullCowCartridge::EndGame()
     PrintLine(TEXT("\nPress enter to play again."));
 }
 
-void UBullCowCartridge::ProcessGuess(FString Guess)
+void UBullCowCartridge::ProcessGuess(const FString& Guess)
 {
     if (Guess == HiddenWord) 
     {
@@ -105,7 +95,7 @@ void UBullCowCartridge::ProcessGuess(FString Guess)
         
 }
 
-bool UBullCowCartridge::IsIsogram(FString String) const
+bool UBullCowCartridge::IsIsogram(const FString& String) const
 {
     for (int32 Index = 0; Index < String.Len(); Index++) 
     {
@@ -120,7 +110,7 @@ bool UBullCowCartridge::IsIsogram(FString String) const
     return true;
 }
 
-TArray<FString> UBullCowCartridge::GetValidWords(TArray<FString> WordList) const
+TArray<FString> UBullCowCartridge::GetValidWords(const TArray<FString>& WordList) const
 {
     TArray<FString> ValidWords;
    // range-based foor loop
