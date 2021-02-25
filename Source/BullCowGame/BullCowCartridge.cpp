@@ -5,22 +5,18 @@
 void UBullCowCartridge::BeginPlay() // When the game starts
 {
     Super::BeginPlay();
-    
-    int32 a = 0;
-    int32 b = 5;
 
-    const int32& refa = a;
-    PrintLine(TEXT("a = %i, b = %i, refa = %i"), a, b, refa);
+    Isograms = GetValidWords(Words);
+    // int32 a = 0;
+    // int32 b = 5;
+
+    // const int32& refa = a;
+    // PrintLine(TEXT("a = %i, b = %i, refa = %i"), a, b, refa);
 
     // refa = b;
 
     SetupGame();
 
-    PrintLine(TEXT("The hidden word is: %s."), *HiddenWord);
-    PrintLine(TEXT("The number of valid words is :%i"), GetValidWords(Words).Num());
-    PrintLine(TEXT("The number of possible words is :%i."), Words.Num());
-
-    
 }
 
 void UBullCowCartridge::OnInput(const FString& PlayerInput) // When the player hits enter
@@ -39,17 +35,16 @@ void UBullCowCartridge::OnInput(const FString& PlayerInput) // When the player h
 void UBullCowCartridge::SetupGame()
 {
     PrintLine(TEXT("Welcome to Bulls & Cows game!"));
-
-    HiddenWord = TEXT("Cake");
+    
+    HiddenWord = Isograms[FMath::RandRange(0, Isograms.Num() - 1)];
     bGameOver = false;
     Lives = HiddenWord.Len();
 
+    PrintLine(TEXT("Guess the %i letter word!"), HiddenWord.Len());
     PrintLine(TEXT("You have %i lives."), Lives);
     PrintLine(TEXT("Type in your your guess and press enter to continue..."), Lives);
+    PrintLine(TEXT("The hidden word is: %s."), *HiddenWord);
 
-    const TCHAR HW[] = TEXT("plums");
-    PrintLine(TEXT("Character 1 of hidden word is: %c"), HiddenWord[0]);
-    PrintLine(TEXT("Character 4 of HW word is: %c"), HW[3]);
 }
 
 void UBullCowCartridge::EndGame()
@@ -91,6 +86,10 @@ void UBullCowCartridge::ProcessGuess(const FString& Guess)
         EndGame();
         return;
     }
+    FBullCowCount Score = GetBullCows(Guess);
+
+    PrintLine(TEXT("You have %i Bulls and %i Cows"), Score.Bulls, Score.Cows);
+     
     PrintLine(TEXT("Guess again, you have %i lives left"), Lives);
         
 }
@@ -122,4 +121,29 @@ TArray<FString> UBullCowCartridge::GetValidWords(const TArray<FString>& WordList
         }
     }
     return ValidWords;
+}
+
+// Out parameters usage. Parameters that are only used for returning values back to the caller are called out parameters.
+FBullCowCount UBullCowCartridge::GetBullCows(const FString& Guess) const
+{
+    FBullCowCount Count;
+
+    for (int32 GuessIndex = 0; GuessIndex < Guess.Len(); GuessIndex++)
+    {
+        if (Guess[GuessIndex] == HiddenWord[GuessIndex])
+        {
+            Count.Bulls++;
+            continue;
+        }
+        
+        for (int32 HiddenIndex = 0; HiddenIndex < HiddenWord.Len(); HiddenIndex++)
+        {
+            if (Guess[GuessIndex] == HiddenWord[HiddenIndex])
+            {
+                Count.Cows++;
+                break;
+            }
+        }
+    }
+    return Count;
 }
